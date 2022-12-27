@@ -23,7 +23,7 @@ public class Core : MonoBehaviour
     [SerializeField] private GridData _gridData;
 
     // Internal only
-    private List<LogicBlockBase> _logicBlocks;
+    private List<LogicBase> _logicBlocks;
     private IAssetProvider _assetProvider;
     private int _lastWidth;
     private int _lastHeight;
@@ -38,7 +38,7 @@ public class Core : MonoBehaviour
     {
         _ready = false;
         _gridData = new GridData();
-        _logicBlocks = new List<LogicBlockBase>();
+        _logicBlocks = new List<LogicBase>();
 
         _assetProvider = _tempProvider;
         _lastWidth = _width;
@@ -58,14 +58,15 @@ public class Core : MonoBehaviour
 
         // Configure logic blocks
         AddLogic<LogicPlayer>(_logicBlocks, new string[] { "player" });
+        AddLogic<LoigicWanderer>(_logicBlocks, new string[] { "wanderer" });
 
         // Asset setup
         StartCoroutine(_assetProvider.Initialize(() => { _ready = true; }));
     }
 
-    private void AddLogic<T>(List<LogicBlockBase> logicList, string[] types) where T : LogicBlockBase, new()
+    private void AddLogic<T>(List<LogicBase> logicList, string[] types) where T : LogicBase, new()
     {
-        LogicBlockBase obj = new T();
+        LogicBase obj = new T();
         obj.RegisterIDs(types);
         logicList.Add(obj);
     }
@@ -79,6 +80,7 @@ public class Core : MonoBehaviour
         }
 
         UpdateGridSizeIfNeeded();
+        UpdateAllEntityLifeAmounts();
         UpdateAllEntities();
         UpdateVisuals();
     }
@@ -96,6 +98,28 @@ public class Core : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Go through all entities and update their seconds alive number
+    /// </summary>
+    private void UpdateAllEntityLifeAmounts()
+    {
+        // Update current time alive so far
+        float dt = Time.deltaTime;
+        for (int i = 0; i < _entityData.entities.Count; ++i)
+        {
+            Entity curEntity = _entityData.entities[i];
+            double lastSecAlive = curEntity.secondsAlive;
+            curEntity.secondsAlive += dt;
+            if ((int)curEntity.secondsAlive != (int)lastSecAlive)
+            {
+                curEntity.firstUpdateOfNewSecond = true;
+            }
+            else
+            {
+                curEntity.firstUpdateOfNewSecond = false;
+            }
+        }
+    }
 
     /// <summary>
     /// Go through all entities and perform logic in order of 
@@ -103,6 +127,7 @@ public class Core : MonoBehaviour
     /// </summary>
     private void UpdateAllEntities()
     {
+        // Update each entity with behaviors
         for(int i = 0; i < _entityData.entities.Count; ++i)
         {
             Entity curEntity = _entityData.entities[i];
@@ -110,7 +135,7 @@ public class Core : MonoBehaviour
             UpdateEntity(curEntity, _logicBlocks, _entityData, _gridData);
         }
     }
-    private void UpdateEntity(Entity curEntity, List<LogicBlockBase> logicBlocks, EntityData entityData, GridData gridData)
+    private void UpdateEntity(Entity curEntity, List<LogicBase> logicBlocks, EntityData entityData, GridData gridData)
     {
         for (int i = 0; i < logicBlocks.Count; ++i)
         {

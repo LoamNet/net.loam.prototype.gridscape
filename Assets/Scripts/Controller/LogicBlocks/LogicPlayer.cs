@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LogicPlayer : LogicBlockBase
+public class LogicPlayer : LogicBase
 {
     public override void Execute(Entity current, EntityData entities, GridData grid)
     {
@@ -30,18 +30,5 @@ public class LogicPlayer : LogicBlockBase
         {
             current.xPos += 1;
         }
-    }
-
-    private bool CanMoveTo(GridData grid, int x, int y)
-    {
-        if (grid.TryGetCell(x, y, out GridCell cellW))
-        {
-            if (cellW.cellType == SurfaceType.Floor)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

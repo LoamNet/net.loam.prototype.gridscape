@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028328, g: 0.22571322, b: 0.30692163, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -480,6 +480,7 @@ MonoBehaviour:
   _assets:
   - {fileID: 189426830172926049, guid: 890143905e150d84ab48a83d4ac0defb, type: 3}
   - {fileID: 189426830172926049, guid: 8fee0a1989e077444ad2085c251f4ec9, type: 3}
+  - {fileID: 189426830172926049, guid: edf124c164f68cb4ca05986759dcae94, type: 3}
 --- !u!1 &1842884438
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,6 +647,12 @@ MonoBehaviour:
     - id: player
       xPos: 10
       yPos: 7
+    - id: wanderer
+      xPos: 5
+      yPos: 16
+    - id: wanderer
+      xPos: 3
+      yPos: 9
   _gridData:
     width: 0
     height: 0
