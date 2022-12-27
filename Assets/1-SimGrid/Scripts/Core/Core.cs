@@ -18,7 +18,7 @@ public class Core : MonoBehaviour
     [Header("Visuals and Contents")]
     [SerializeField] private Visualizer _visualizer;
     
-    [Header("Live Data (can be cleared or live edited)")]
+    [Header("Live Data (CLEARED ON PLAY)")]
     [SerializeField] private EntityData _entityData;
     [SerializeField] private GridData _gridData;
 
@@ -37,6 +37,7 @@ public class Core : MonoBehaviour
     private void Awake()
     {
         _ready = false;
+        _entityData = new EntityData();
         _gridData = new GridData();
         _logicBlocks = new List<LogicBase>();
 
@@ -56,18 +57,23 @@ public class Core : MonoBehaviour
         _gridData.Initialize(_width, _height, _cellTemplate);
         SetNoise(_gridData, _noiseSeed, _noiseZoom);
 
+        // Add Entites
+        _entityData.entities.Add(new EntityPlayer() { id = "player", xPos = 10, yPos = 7 });
+        _entityData.entities.Add(new EntityWanderer() { id = "wanderer", xPos = 3, yPos = 9, timeBetweenMoves = 1 } );
+        _entityData.entities.Add(new EntityWanderer() { id = "wanderer", xPos = 4, yPos = 15, timeBetweenMoves = 1 } );
+
         // Configure logic blocks
-        AddLogic<LogicPlayer>(_logicBlocks, new string[] { "player" });
-        AddLogic<LoigicWanderer>(_logicBlocks, new string[] { "wanderer" });
+        AddLogic<LogicPlayerMove>(_logicBlocks, new System.Type[] { typeof(EntityPlayer) });
+        AddLogic<LogicEntityWander>(_logicBlocks, new System.Type[] { typeof(EntityWanderer) });
 
         // Asset setup
         StartCoroutine(_assetProvider.Initialize(() => { _ready = true; }));
     }
 
-    private void AddLogic<T>(List<LogicBase> logicList, string[] types) where T : LogicBase, new()
+    private void AddLogic<T>(List<LogicBase> logicList, System.Type[] supportedTypes) where T : LogicBase, new()
     {
         LogicBase obj = new T();
-        obj.RegisterIDs(types);
+        obj.RegisterTypes(supportedTypes);
         logicList.Add(obj);
     }
 
@@ -80,7 +86,6 @@ public class Core : MonoBehaviour
         }
 
         UpdateGridSizeIfNeeded();
-        UpdateAllEntityLifeAmounts();
         UpdateAllEntities();
         UpdateVisuals();
     }
@@ -95,29 +100,6 @@ public class Core : MonoBehaviour
             _lastWidth = _width;
             _lastHeight = _height;
             SetNoise(_gridData, _noiseSeed, _noiseZoom);
-        }
-    }
-
-    /// <summary>
-    /// Go through all entities and update their seconds alive number
-    /// </summary>
-    private void UpdateAllEntityLifeAmounts()
-    {
-        // Update current time alive so far
-        float dt = Time.deltaTime;
-        for (int i = 0; i < _entityData.entities.Count; ++i)
-        {
-            Entity curEntity = _entityData.entities[i];
-            double lastSecAlive = curEntity.secondsAlive;
-            curEntity.secondsAlive += dt;
-            if ((int)curEntity.secondsAlive != (int)lastSecAlive)
-            {
-                curEntity.firstUpdateOfNewSecond = true;
-            }
-            else
-            {
-                curEntity.firstUpdateOfNewSecond = false;
-            }
         }
     }
 
@@ -139,7 +121,7 @@ public class Core : MonoBehaviour
     {
         for (int i = 0; i < logicBlocks.Count; ++i)
         {
-            if (logicBlocks[i].SupportsID(curEntity.id))
+            if (logicBlocks[i].SupportsType(curEntity.GetType()))
             {
                 logicBlocks[i].Execute(curEntity, entityData, gridData);
             }

@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class EntityData
 {
-    public List<Entity> entities;
+    public List<Entity> entities = new List<Entity>();
 
     public List<Entity> GetEntitiesAtPosition(int x, int y)
     {

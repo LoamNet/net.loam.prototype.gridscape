@@ -7,30 +7,39 @@ public abstract class LogicBase
     /// <summary>
     /// The IDs that will execute the logic specified
     /// </summary>
-    private HashSet<string> _relatedIDs = new HashSet<string>();
-    public abstract void Execute(Entity current, EntityData entities, GridData grid);
+    private HashSet<System.Type> _registeredTypes = new HashSet<System.Type>();
+    public abstract void Execute<T>(T target, EntityData entities, GridData grid) where T : Entity;
 
-    public void RegisterIDs(string[] collection)
+    public void RegisterTypes(System.Type[] toRegister)
     {
-        for(int i = 0; i < collection.Length; ++i)
+        for(int i = 0; i < toRegister.Length; ++i)
         {
-            string toAdd = collection[i];
-            RegisterID(toAdd);
+            RegisterType(toRegister[i]);
         }
     }
 
-    public void RegisterID(string toAdd)
+    public void RegisterType(System.Type type)
     {
-        bool added = _relatedIDs.Add(toAdd);
+        bool added = _registeredTypes.Add(type);
         if (!added)
         {
-            Debug.LogWarning($"Tried to add a duplicate term: {toAdd}");
+            Debug.LogWarning($"Tried to add a duplicate type: {type.Name}");
         }
     }
 
-    public bool SupportsID(string id)
+    public bool SupportsType(System.Type type)
     {
-        return _relatedIDs.Contains(id);
+        return _registeredTypes.Contains(type);
+    }
+
+    public void RegisterType<T>() where T : Entity
+    {
+        RegisterType(typeof(T));
+    }
+
+    public bool SupportsType<T>()
+    {
+        return SupportsType(typeof(T));
     }
 
 

@@ -2,10 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LoigicWanderer : LogicBase
+public class LogicEntityWander : LogicBase
 {
-    public override void Execute(Entity current, EntityData entities, GridData grid)
+    public override void Execute<T>(T target, EntityData entities, GridData grid)
     {
+        EntityWanderer current = target as EntityWanderer;
+        if(current == null)
+        {
+            return;
+        }
+
         int curX = current.xPos;
         int curY = current.yPos;
 
@@ -14,7 +20,8 @@ public class LoigicWanderer : LogicBase
         bool canMoveWest = CanMoveTo(grid, curX - 1, curY);
         bool canMoveEast = CanMoveTo(grid, curX + 1, curY);
 
-        if (current.firstUpdateOfNewSecond)
+        current.timeToNextMove -= Time.deltaTime;
+        if (current.timeToNextMove <= 0)
         {
             int action = Random.Range(0, 8);
             if(action < 4)
@@ -58,6 +65,8 @@ public class LoigicWanderer : LogicBase
                         return;
                 }
             }
+
+            current.timeToNextMove = current.timeBetweenMoves;
         }
     }
 }

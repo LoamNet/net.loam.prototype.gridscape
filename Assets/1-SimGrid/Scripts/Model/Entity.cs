@@ -5,23 +5,26 @@ using UnityEngine;
 [System.Serializable]
 public class Entity
 {
-    public string id;
-    public int xPos;
-    public int yPos;
+    public string id = "default";
+    public int xPos = 0;
+    public int yPos = 0;
 
-    public double secondsAlive;
-    [System.NonSerialized] public bool firstUpdateOfNewSecond;
+    //public List<DataBase> data = new List<DataBase>();
 
-    public Entity Clone()
+    public virtual Entity Clone()
     {
         Entity clone = new Entity();
         clone.id = this.id;
         clone.xPos = this.xPos;
         clone.yPos = this.yPos;
 
-        // Reset seconds alive and related, that doesn't copy over.
-        clone.secondsAlive = 0;
-        clone.firstUpdateOfNewSecond = false;
+        /*
+        for(int i = 0; i < this.data.Count; ++i)
+        {
+            clone.data.Add(this.data[i].Clone());
+        }
+        */
+
         return clone;
     }
 }

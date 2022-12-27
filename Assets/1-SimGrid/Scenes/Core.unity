@@ -643,19 +643,7 @@ MonoBehaviour:
     _squareSize: 23
     _padding: 1
   _entityData:
-    entities:
-    - id: player
-      xPos: 10
-      yPos: 7
-      secondsAlive: 0
-    - id: wanderer
-      xPos: 3
-      yPos: 9
-      secondsAlive: 0
-    - id: wanderer
-      xPos: 4
-      yPos: 15
-      secondsAlive: 0
+    entities: []
   _gridData:
     width: 0
     height: 0

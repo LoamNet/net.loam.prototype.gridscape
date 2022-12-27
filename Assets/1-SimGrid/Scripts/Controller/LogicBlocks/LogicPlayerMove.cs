@@ -2,10 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LogicPlayer : LogicBase
+public class LogicPlayerMove : LogicBase
 {
-    public override void Execute(Entity current, EntityData entities, GridData grid)
+    public override void Execute<T>(T current, EntityData entities, GridData grid)
     {
+        if(typeof(T) != typeof(EntityPlayer))
+        {
+            return;
+        }
+
         int curX = current.xPos;
         int curY = current.yPos;
 
