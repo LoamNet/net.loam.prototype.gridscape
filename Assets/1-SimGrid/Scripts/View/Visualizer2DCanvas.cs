@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static GridData;
 
-[System.Serializable]
-public class Visualizer : IDisposable
+public class Visualizer2DCanvas : MonoBehaviour, IVisualizer
 {
     [SerializeField] private GameObject _template;
     [SerializeField] private Transform _visualsParent;
@@ -55,7 +53,7 @@ public class Visualizer : IDisposable
         return obj;
     }
 
-    public void Update(IAssetProvider assetProvider, GridData gridData, EntityData entityData)
+    public void Visualize(IAssetProvider assetProvider, GridData gridData, EntityData entityData)
     {
         DisplayCells(gridData);
         DisplayEntities(assetProvider, gridData, entityData);

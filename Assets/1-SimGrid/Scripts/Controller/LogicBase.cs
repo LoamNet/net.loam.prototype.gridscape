@@ -2,29 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public abstract class LogicBase
 {
     /// <summary>
     /// The IDs that will execute the logic specified
     /// </summary>
-    private HashSet<System.Type> _registeredTypes = new HashSet<System.Type>();
+    private List<System.Type> _registeredTypes = new List<System.Type>();
     public abstract void Execute<T>(T target, EntityData entities, GridData grid) where T : Entity;
 
     public void RegisterTypes(System.Type[] toRegister)
     {
         for(int i = 0; i < toRegister.Length; ++i)
         {
-            RegisterType(toRegister[i]);
+            RegisterType(toRegister[i]); 
         }
     }
 
     public void RegisterType(System.Type type)
     {
-        bool added = _registeredTypes.Add(type);
-        if (!added)
-        {
-            Debug.LogWarning($"Tried to add a duplicate type: {type.Name}");
-        }
+        _registeredTypes.Add(type); 
+        //if (!added)
+        //{
+        //    Debug.LogWarning($"Tried to add a duplicate type: {type.Name}");
+        //}
     }
 
     public bool SupportsType(System.Type type)

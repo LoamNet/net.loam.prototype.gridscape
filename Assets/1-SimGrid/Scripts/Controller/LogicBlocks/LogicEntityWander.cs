@@ -36,30 +36,30 @@ public class LogicEntityWander : LogicBase
                         if (canMoveNorth)
                         {
                             current.yPos += 1;
-                            Debug.Log($"{current.id} is moving north!");
+                            break;
                         }
-                        break;
+                        goto default;
                     case 5:
                         if (canMoveEast)
                         {
                             current.xPos += 1;
-                            Debug.Log($"{current.id} is moving east!");
+                            break;
                         }
-                        break;
+                        goto default;
                     case 6:
                         if (canMoveSouth)
                         {
                             current.yPos -= 1;
-                            Debug.Log($"{current.id} is moving south!");
+                            break;
                         }
-                        break;
+                        goto default;
                     case 7:
                         if (canMoveWest)
                         {
                             current.xPos -= 1;
-                            Debug.Log($"{current.id} is moving west!");
+                            break;
                         }
-                        break;
+                        goto default;
                     default:
                         Debug.Log($"{current.id} tried to move, but decided not to (rolled a {action})");
                         return;

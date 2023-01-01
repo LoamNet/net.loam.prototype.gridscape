@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class LogicPlayerMove : LogicBase
 {
-    public override void Execute<T>(T current, EntityData entities, GridData grid)
+    public override void Execute<T>(T target, EntityData entities, GridData grid)
     {
-        if(typeof(T) != typeof(EntityPlayer))
+        EntityPlayer current = target as EntityPlayer;
+        if (current == null)
         {
             return;
         }

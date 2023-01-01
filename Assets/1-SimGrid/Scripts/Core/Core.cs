@@ -7,6 +7,7 @@ public class Core : MonoBehaviour
     // Inspector
     [Header("Links")]
     [SerializeField] private AssetProviderLocal _tempProvider;
+    [SerializeField] private Visualizer2DCanvas _tempVisualizer;
 
     [Header("Configuration")]
     [SerializeField] [Range(1, 30)] public int _width = 2;
@@ -16,7 +17,6 @@ public class Core : MonoBehaviour
     [SerializeField] private GridCell _cellTemplate;
 
     [Header("Visuals and Contents")]
-    [SerializeField] private Visualizer _visualizer;
     
     [Header("Live Data (CLEARED ON PLAY)")]
     [SerializeField] private EntityData _entityData;
@@ -25,6 +25,7 @@ public class Core : MonoBehaviour
     // Internal only
     private List<LogicBase> _logicBlocks;
     private IAssetProvider _assetProvider;
+    private IVisualizer _visualizer;
     private int _lastWidth;
     private int _lastHeight;
     private float _lastNoise;
@@ -42,6 +43,7 @@ public class Core : MonoBehaviour
         _logicBlocks = new List<LogicBase>();
 
         _assetProvider = _tempProvider;
+        _visualizer = _tempVisualizer;
         _lastWidth = _width;
         _lastHeight = _height;
         _lastNoise = _noiseSeed;
@@ -131,7 +133,7 @@ public class Core : MonoBehaviour
     private void UpdateVisuals()
     {
         // Perform updates
-        _visualizer.Update(_assetProvider, _gridData, _entityData);
+        _visualizer.Visualize(_assetProvider, _gridData, _entityData);
     }
 
     /// <summary>
