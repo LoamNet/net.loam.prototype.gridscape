@@ -14,13 +14,13 @@ public enum SurfaceType
 public class GridCell
 {
     public SurfaceType cellType = SurfaceType.NONE;
-    public float alpha = 0;
+    public float height = 0;
 
     public GridCell Clone()
     {
         GridCell clone = new GridCell();
         clone.cellType = this.cellType;
-        clone.alpha = this.alpha;
+        clone.height = this.height;
 
         return clone;
     }
@@ -28,6 +28,6 @@ public class GridCell
     public void Copy(GridCell toCopyFrom)
     {
         this.cellType = toCopyFrom.cellType;
-        this.alpha = toCopyFrom.alpha;
+        this.height = toCopyFrom.height;
     }
 }

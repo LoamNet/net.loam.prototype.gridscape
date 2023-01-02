@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Visualizer2DCanvas : MonoBehaviour, IVisualizer
+public class Visualizer2D : MonoBehaviour, IVisualizer
 {
     [SerializeField] private GameObject _template;
     [SerializeField] private Transform _visualsParent;
@@ -14,13 +14,14 @@ public class Visualizer2DCanvas : MonoBehaviour, IVisualizer
     private List<GameObject> _visualsPool = new List<GameObject>();
     private List<GameObject> _entityList = new List<GameObject>(); // not a pool
 
-    Dictionary<int, Dictionary<int, bool>> _coordDirty = new Dictionary<int, Dictionary<int, bool>>();
+    Dictionary<Vector2, bool> _coordDirty = new Dictionary<Vector2, bool>();
     private bool _redraw;
 
-    public void FlagForRedraw()
+    public void RequestCompleteRedraw()
     {
         _redraw = true;
     }
+
     private void CreateEntry()
     {
         GameObject obj = GameObject.Instantiate(_template);
@@ -118,16 +119,10 @@ public class Visualizer2DCanvas : MonoBehaviour, IVisualizer
 
     private bool IsDirty(int x, int y)
     {
-        if(_coordDirty.TryGetValue(x, out Dictionary<int, bool> yDict))
+        Vector2 coord = new Vector2(x, y);
+        if (_coordDirty.TryGetValue(coord, out bool isDirty))
         {
-            if(yDict.TryGetValue(y, out bool isDirty))
-            {
-                return isDirty;
-            }
-            else
-            {
-                return true;
-            }
+            return isDirty;
         }
         else
         {
@@ -137,22 +132,14 @@ public class Visualizer2DCanvas : MonoBehaviour, IVisualizer
 
     private void SetDirty(int x, int y, bool val)
     {
-        if (_coordDirty.TryGetValue(x, out Dictionary<int, bool> yDict))
+        Vector2 coord = new Vector2(x, y);
+        if (_coordDirty.ContainsKey(coord))
         {
-            if (yDict.ContainsKey(y))
-            {
-                yDict[y] = val;
-            }
-            else
-            {
-                yDict.Add(y, val);
-            }
+            _coordDirty[coord] = val;
         }
         else
         {
-            Dictionary<int, bool> yLookup = new Dictionary<int, bool>();
-            yLookup.Add(y, val);
-            _coordDirty.Add(x, yLookup);
+            _coordDirty.Add(coord, val);
         }
     }
 
@@ -181,10 +168,10 @@ public class Visualizer2DCanvas : MonoBehaviour, IVisualizer
                 break;
 
             case SurfaceType.Floor:
-                newItem.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 1, 0.4f * entry.alpha);
+                newItem.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 1, 0.4f * entry.height);
                 break;
             case SurfaceType.Wall:
-                newItem.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 1, entry.alpha + 0.05f);
+                newItem.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 1, entry.height + 0.05f);
                 break;
         }
 

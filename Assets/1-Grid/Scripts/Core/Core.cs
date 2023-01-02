@@ -7,7 +7,9 @@ public class Core : MonoBehaviour
     // Inspector
     [Header("Links")]
     [SerializeField] private AssetProviderLocal _tempProvider;
-    [SerializeField] private Visualizer2DCanvas _tempVisualizer;
+    [SerializeField] private Visualizer2D _tempVisualizer;
+    [SerializeField] private Visualizer3D _tempVisualizer3D;
+    [SerializeField] private IVisualizer _explore;
 
     [Header("Configuration")]
     [SerializeField] [Range(1, 30)] public int _width = 2;
@@ -24,8 +26,8 @@ public class Core : MonoBehaviour
 
     // Internal only
     private List<LogicBase> _logicBlocks;
+    private List<IVisualizer> _visualizers;
     private IAssetProvider _assetProvider;
-    private IVisualizer _visualizer;
     private int _lastWidth;
     private int _lastHeight;
     private float _lastNoise;
@@ -41,9 +43,9 @@ public class Core : MonoBehaviour
         _entityData = new EntityData();
         _gridData = new GridData();
         _logicBlocks = new List<LogicBase>();
+        _visualizers = new List<IVisualizer>();
 
         _assetProvider = _tempProvider;
-        _visualizer = _tempVisualizer;
         _lastWidth = _width;
         _lastHeight = _height;
         _lastNoise = _noiseSeed;
@@ -58,6 +60,10 @@ public class Core : MonoBehaviour
         // Grid setup
         _gridData.Initialize(_width, _height, _cellTemplate);
         SetNoise(_gridData, _noiseSeed, _noiseZoom);
+
+        // Add visualizers
+        _visualizers.Add(_tempVisualizer);
+        _visualizers.Add(_tempVisualizer3D);
 
         // Add Entites
         _entityData.entities.Add(new EntityPlayer() { id = "player", xPos = 10, yPos = 7 });
@@ -102,6 +108,11 @@ public class Core : MonoBehaviour
             _lastWidth = _width;
             _lastHeight = _height;
             SetNoise(_gridData, _noiseSeed, _noiseZoom);
+
+            for(int i = 0; i < _visualizers.Count; ++i)
+            {
+                _visualizers[i].RequestCompleteRedraw();
+            }
         }
     }
 
@@ -133,7 +144,11 @@ public class Core : MonoBehaviour
     private void UpdateVisuals()
     {
         // Perform updates
-        _visualizer.Visualize(_assetProvider, _gridData, _entityData);
+        for(int i = 0; i < _visualizers.Count; ++i)
+        {
+            IVisualizer visualizer = _visualizers[i];
+            visualizer.Visualize(_assetProvider, _gridData, _entityData);
+        }
     }
 
     /// <summary>
@@ -154,7 +169,7 @@ public class Core : MonoBehaviour
                 float height = Mathf.PerlinNoise(scaled + w * zoom, scaled + h * zoom);
 
                 GridCell cell = data.GetCell(w, h);
-                cell.alpha = height;
+                cell.height = height;
 
                 if (height > 0.5f)
                 {

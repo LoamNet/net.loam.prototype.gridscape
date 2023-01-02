@@ -5,5 +5,7 @@ using UnityEngine;
 
 public interface IVisualizer : IDisposable
 {
+    public void RequestCompleteRedraw();
+
     public void Visualize(IAssetProvider assetProvider, GridData gridData, EntityData entityData);
 }

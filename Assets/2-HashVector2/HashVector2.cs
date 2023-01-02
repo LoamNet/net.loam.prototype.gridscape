@@ -32,7 +32,6 @@ public class HashVector2 : MonoBehaviour
     {
         bool retVal = testDict.Remove(toRemove);
         Debug.Log($"Removed {toRemove} (returned {retVal})");
-
     }
 
     private void Contains(Vector2 toCheck)
