@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoordinateHash : MonoBehaviour
+public class HashVector2 : MonoBehaviour
 {
     private Dictionary<Vector2, bool> testDict = new Dictionary<Vector2, bool>();
 
@@ -37,7 +37,7 @@ public class CoordinateHash : MonoBehaviour
 
     private void Contains(Vector2 toCheck)
     {
-        bool val = testDict.ContainsKey(new Vector2(1, 2));
+        bool val = testDict.ContainsKey(toCheck);
         Debug.Log($"ContainsKey {toCheck}? {val}");
 
     }
