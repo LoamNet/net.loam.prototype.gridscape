@@ -6,18 +6,19 @@ using UnityEngine;
 public partial class ConversationSystem : IDisposable
 {
     // Inspector
-    [Header("Internal Preview")] [SerializeField] private Conversation conversation;
+    [SerializeField] private Conversation _conversation;
+    [SerializeField] private int _currentLineIndex;
 
-    // Internals
-    private int _currentLineIndex;
-    private ConversationLine _currentLineRaw;
-    private ConversationSystemLine _currentLinePrimary;
-    private List<ConversationSystemLine> _currentLineOptions;
-    private Dictionary<string, int> _jumpLookup;
+    // Internal
+    [NonSerialized] private ConversationLine _currentLineRaw;
+    [NonSerialized] private Line _currentLinePrimary;
+    [NonSerialized] private List<Line> _currentLineOptions;
+    [NonSerialized] private Dictionary<string, int> _jumpLookup;
 
     // Callbacks
-    public Action OnLineUpdate { get; private set; }
-    public Action<string> OnMessage { get; private set; }
+    public Action OnLineUpdate;
+    public Action OnEnd;
+    public Action<string> OnMessage;
 
     /// <summary>
     /// Barebones get-the-object-alive style. 
@@ -27,7 +28,7 @@ public partial class ConversationSystem : IDisposable
         _currentLineIndex = 0;
         _currentLineRaw = null;
         _currentLinePrimary = null;
-        _currentLineOptions = new List<ConversationSystemLine>();
+        _currentLineOptions = new List<Line>();
         _jumpLookup = new Dictionary<string, int>();
     }
 
@@ -58,18 +59,36 @@ public partial class ConversationSystem : IDisposable
     /// <param name="line"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public bool TryGetCurrentLine(out ConversationSystemLine line, out IReadOnlyCollection<ConversationSystemLine> options)
+    public bool TryGetCurrentLine(out Line line, out IReadOnlyList<Line> options)
     {
-        if (ConversationActive())
+        if (!ConversationActive())
         {
-            line = _currentLinePrimary;
-            options = _currentLineOptions;
-            return true;
+            line = null;
+            options = null;
+            return false;
         }
 
-        line = null;
-        options = null;
-        return false;
+        line = _currentLinePrimary;
+        options = _currentLineOptions;
+        return true;
+    }
+
+    /// <summary>
+    /// Retrieves the current speaker, which may be null or empty even in a valid situation.
+    /// It's suggested that this should generally imply a narrator, but it can mean whatever you want.
+    /// </summary>
+    /// <param name="speaker"></param>
+    /// <returns></returns>
+    public bool TryGetCurrentSpeaker(out string speaker)
+    {
+        if(!ConversationActive())
+        {
+            speaker = null;
+            return false;
+        }
+        
+        speaker = _currentLineRaw.speaker;
+        return true;
     }
 
     /// <summary>
@@ -142,18 +161,14 @@ public partial class ConversationSystem : IDisposable
     /// <param name="conversationAsset"></param>
     private void LoadConversation(TextAsset conversationAsset)
     {
-        // Clear old info
-        _jumpLookup.Clear();
-        _currentLineIndex = 0;
-
         // Parse out conversation data and override existing content
         string text = conversationAsset.text;
-        conversation = JsonUtility.FromJson<Conversation>(text);
+        _conversation = JsonUtility.FromJson<Conversation>(text);
 
         // Build lookup
-        for(int i = 0; i < conversation.lines.Count; ++i)
+        for(int i = 0; i < _conversation.lines.Count; ++i)
         {
-            ConversationLine line = conversation.lines[i];
+            ConversationLine line = _conversation.lines[i];
             if (!string.IsNullOrWhiteSpace(line.label))
             {
                 _jumpLookup.Add(line.label, i);
@@ -168,19 +183,23 @@ public partial class ConversationSystem : IDisposable
     /// <param name="toLoad">index into conversation.lines of the line to load.</param>
     private void LoadLine(int toLoad)
     {
-        List<ConversationLine> lines = conversation.lines;
+        List<ConversationLine> lines = _conversation.lines;
 
         // Handle transitioning to end case (or any excess line count as a reasonable default of 'end')
         if (toLoad >= lines.Count)
         {
             ConfigureInternals();
             OnLineUpdate?.Invoke();
-            ProcessMessage(conversation.end.message);
+            OnEnd?.Invoke();
+            ProcessMessage(_conversation.end.message);
             return;
         }
 
         // Configure as a clean slate, but don't dispose of list object itself.
-        _currentLinePrimary.Invalidate();
+        if (_currentLinePrimary != null)
+        {
+            _currentLinePrimary.Invalidate();
+        }
         for(int i = 0; i < _currentLineOptions.Count; ++i)
         {
             _currentLineOptions[i].Invalidate();
@@ -189,8 +208,8 @@ public partial class ConversationSystem : IDisposable
 
         // process and load primary line
         _currentLineIndex = toLoad;
-        _currentLineRaw = conversation.lines[_currentLineIndex];
-        _currentLinePrimary = new ConversationSystemLine(this, _currentLineRaw.text, _currentLineRaw.jump, _currentLineIndex);
+        _currentLineRaw = _conversation.lines[_currentLineIndex];
+        _currentLinePrimary = new Line(this, _currentLineRaw.text, _currentLineRaw.jump, _currentLineIndex, null);
 
         // process any options present. If none, should be empty.
         if(_currentLineRaw.options != null)
@@ -198,13 +217,14 @@ public partial class ConversationSystem : IDisposable
             for(int i = 0; i < _currentLineRaw.options.Count; ++i)
             {
                 ConversationOption option = _currentLineRaw.options[i];
-                ConversationSystemLine optionLine = new ConversationSystemLine(this, option.text, option.jump, _currentLineIndex);
+                Line optionLine = new Line(this, option.text, option.jump, _currentLineIndex, option.message);
                 _currentLineOptions.Add(optionLine);
             }
         }
 
         // Dispatch relevant events
         OnLineUpdate?.Invoke();
+        ProcessMessage(_currentLineRaw.message);
     }
 
     /// <summary>

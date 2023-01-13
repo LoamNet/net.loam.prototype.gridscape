@@ -4,25 +4,27 @@ using UnityEngine;
 
 public partial class ConversationSystem
 {
-    public class ConversationSystemLine
+    public class Line
     {
         // Public
         public string text;
 
         // Internal
+        private string _messageOnNext;
         private string _jump;
         private int _lineNumber;
         private ConversationSystem _system;
 
         public bool IsValid { get; private set; }
 
-        public ConversationSystemLine(ConversationSystem system, string text, string jumpTarget, int currentLine)
+        public Line(ConversationSystem system, string text, string jumpTarget, int currentLine, string messageOnNext)
         {
             this.text = text;
 
-            this._system = system;
             this._jump = jumpTarget;
             this._lineNumber = currentLine;
+            this._system = system;
+            this._messageOnNext = messageOnNext;
 
             this.IsValid = true;
         }
@@ -39,6 +41,7 @@ public partial class ConversationSystem
 
             int nextLine = _system.DetermineNext(_lineNumber, _jump);
             _system.LoadLine(nextLine);
+            _system.ProcessMessage(_messageOnNext);
         }
 
         /// <summary>

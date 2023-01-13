@@ -26,7 +26,7 @@
 					"message":"playerWantsToLearnMore"
 				},
 				{
-					"text":"Oh, very intersting! Unfortunately, I left the oven on so I need to go.",
+					"text":"Oh, very intersting. Unfortunately, I left the oven on - Gotta go!",
 					"jump":"end"
 				}
 			]
