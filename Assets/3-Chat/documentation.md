@@ -10,19 +10,19 @@ This contains a sample dialog along with descriptions of the sections and subsec
 "conversation":
 [
 	{
-		"text":"Hope you're having a good day",
-		"id":"start",
 		"speaker":"npc",
+		"id":"start",
 		"event":"playerGreetedStart",
+		"text":"Hope you're having a good day!",
 		"goto":null,
 		"options":[],
-		"notes":""
+		"notes":null
 	},
 	{
-		"text":"Choose an option",
-		"id":null,
 		"speaker":"player",
+		"id":null,
 		"event":null,
+		"text":"Choose an option",
 		"goto":null,
 		"options":
 		[
@@ -32,14 +32,14 @@ This contains a sample dialog along with descriptions of the sections and subsec
 				"goto":"start",
 			},
 			{
-				"text":"Thanks! Have a good one! (end) the conversation",
+				"text":"Thanks! Have a good one! (end the conversation)",
 				"event":null,
 				"goto":"end",
 			}
 		],
 		"notes":"The player gets to choose this one, this can loop forever. the goto option for end isn't necessary, but is more explicit this way."
 	}
-]
+],
 "end":
 {
 	"event":"playerGreetedEnd"
