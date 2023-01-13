@@ -71,6 +71,7 @@ This is the primary conversation block, and contains the text of the chat/dialog
 ### `message` (String) (Optional) 
 - A string used as an argument to a generic message system callback. Can be connected to and interpreted as user desires.
 - Empty String or Null will result in no message dispatch. 
+- Sent the moment the line is loaded.
 
 ### `text` (String) (REQUIRED)
 - The one and only required field, everything else has reasonable defaults. This is the text displayed. This must contain data, even if it's empty. It cannot be null, and is assumed not to be null.
@@ -82,10 +83,17 @@ This is the primary conversation block, and contains the text of the chat/dialog
 - Specifying "end" inside `jump` will stop the conversation immediately and dispatch the end block.
 
 ### `options` (Array) (Optional)
-- Series of player-facing options that block until one of them is selected. Once selected, the data can be interpreted.
-- Array of objects containing text, message, and jump entries. Purpose of text, message, and jump are identical to as they are described above.
-- Can be null or empty, and often will be. When null or with no contents, nothing is shown for the player to choose from.
-- If present, player must select an option before continuing the conversation. If not present, the one and only player interaction will continue the conversation.
+Series of player-facing options that block until one of them is selected. Once selected, the data can be interpreted. Can be a list of one, but isn't considered if null.
+
+#### `text` (String) (Required)
+- Operates identically to higher level `text`. Represents an entry within a list of things for a player to choose from.
+
+#### `message` (String) (Optional)
+- Operates similarly to higher level `message` in all ways except dispatched only if the option is acted on / 'selected'.
+
+#### `jump` (String) (Optional)
+- Operates identically to higher level `jump`.
+
 
 ### `notes` (String) (Optional)
 - Largely unused and for the purpose of adding notes about this particular piece of dialog, etc.
