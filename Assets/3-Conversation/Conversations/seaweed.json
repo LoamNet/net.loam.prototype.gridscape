@@ -1,0 +1,58 @@
+{
+	"metadata":
+	{
+		"version":1
+	},
+	"lines":
+	[
+		{
+			"speaker":"npc",
+			"text":"Hello! Let me tell you about seaweed!",
+			"jump":"seaweedStart"
+		},
+		{
+			"speaker":"npc",
+			"label":"seaweedStart",
+			"message":"playerDealingWithLongRamble",
+			"text":"Seaweed is a cool type of organism that isn't technically a plant! Seaweed is a macroalgae, featuring different types of growth patterns and techniques. Despite what you'd think, it doesn't have roots and doesn't pull any nutrients from underwater soil where it's anchored. Instead, the \"roots\" - or holdfasts as they're called - are actually just for anchoring the seaweed."
+		},
+		{
+			"speaker":"player",
+			"text":"Choose an option",
+			"options":
+			[
+				{
+					"text":"That's cool! Can you tell me another cool seaweed fact?",
+					"message":"playerWantsToLearnMore"
+				},
+				{
+					"text":"Oh, very intersting! Unfortunately, I left the oven on so I need to go.",
+					"jump":"end"
+				}
+			]
+		},
+		{
+			"speaker":"npc",
+			"label":"repeat",
+			"text":"Sure! Another cool thing is that seaweed can emit some serious acid, string enough to burn through rocks to get a hold! And those floating seaweed? Those floating bits are actually full of nasty non-air gasses, believe it or not. Plus, it's so sinky because it breaks down into hydrogen sulfilde. Smells like rotten eggs a bit - potent stuff!"
+		},
+		{
+			"speaker":"player",
+			"options":
+			[
+				{
+					"text":"Hmm, I didn't quite catch that last part, can you repeat it?",
+					"jump":"repeat"
+				},
+				{
+					"text":"That's cool! Thanks for sharing!"
+				}
+			],
+			"notes":"The player gets to choose this one, this can loop forever"
+		}
+	],
+	"end":
+	{
+		"message":"playerFinishedSeaweedFacts"
+	}
+}
