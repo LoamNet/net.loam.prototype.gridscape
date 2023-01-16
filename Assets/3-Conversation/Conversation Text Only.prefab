@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 775c147c18c39d8419b6ff5b5f5b0d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerSpeakerID: player
+  _playerSpeakerID: Player
   _groupSpeakerL: {fileID: 8617453589800230473}
   _labelSpeakerL: {fileID: 8617453589435201785}
   _groupSpeakerR: {fileID: 8617453589382330914}
