@@ -35,11 +35,10 @@ public partial class ConversationSystem : IDisposable
     /// <summary>
     /// Prepare and begin display of the specified conversation
     /// </summary>
-    /// <param name="conversationAsset"></param>
-    public void Load(TextAsset conversationAsset)
+    public void Load(string conversationJSON)
     {
         ConfigureInternals();
-        LoadConversation(conversationAsset);
+        LoadConversation(conversationJSON);
         LoadLine(0);
     }
 
@@ -159,11 +158,10 @@ public partial class ConversationSystem : IDisposable
     /// Given a specific asset, load the asset into the conversation system and build a jump lookup
     /// </summary>
     /// <param name="conversationAsset"></param>
-    private void LoadConversation(TextAsset conversationAsset)
+    private void LoadConversation(string conversationJSON)
     {
         // Parse out conversation data and override existing content
-        string text = conversationAsset.text;
-        _conversation = JsonUtility.FromJson<Conversation>(text);
+        _conversation = JsonUtility.FromJson<Conversation>(conversationJSON);
 
         // Build lookup
         for(int i = 0; i < _conversation.lines.Count; ++i)
